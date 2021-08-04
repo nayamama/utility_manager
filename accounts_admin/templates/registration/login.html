@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}
+    Log in
+{% endblock %}
+
+{% block title %}
+    Please log in first!
+{% endblock %}
+
+
+{% block content %}
+    <div class="d-flex align-items-center flex-column justify-content-center h-100">
+        <form method="post" action="{% url 'accounts_admin:login' %}">
+            {% csrf_token %}
+            {% if form.errors %}
+                {% for error in form.errors %}
+                    <p class="alert alert-danger">{{ error|escape }}</p>
+                {% endfor %}
+            {% endif %}
+
+            {% if next %}
+                {% if user.is_authenticated %}
+                <p>Your account doesn't have access to this page. To proceed,
+                please login with an account that has access.</p>
+                {% else %}
+                <p>Please login to see this page.</p>
+                {% endif %}
+            {% endif %}
+
+            {{ form|crispy }}
+        <br>
+            <button type="submit" class="btn btn-primary">Log In</button>
+            <input type="hidden" name="next" value="{{ next }}" />
+
+        </form>
+        <div>
+            Lost password? You can <a href="{% url 'password_reset' %}">reset your password</a> again.
+            <br>
+            Not a member yet? Please <a href="{% url 'accounts_admin:sign-up' %}">Register</a> first.
+        </div>
+    </div>
+
+{% endblock %}

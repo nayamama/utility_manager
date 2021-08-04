@@ -1,0 +1,61 @@
+
+
+<form action="{% url 'receipts:receipt-creation' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h5 class="modal-title">Create New Receipt</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="modal-body" id="form-container">
+    {% for field in form %}
+      <div class="form-group{% if field.errors %} invalid{% endif %}">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% for error in field.errors %}
+          <p class="help-block">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+     {{ formset.management_form }}
+        {% for f in formset %}
+            <div class="image-form">
+                {{ f.as_p }}
+            </div>
+        {% endfor %}
+        <button id="add-image" type="button">Add Another Image</button>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
+
+<script>
+    let imageForm = document.querySelectorAll(".image-form")
+    let container = document.querySelector("#form-container")
+    let addImage = document.querySelector("#add-image")
+    //let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+    let totalForms = document.querySelector("#id_images_set-TOTAL_FORMS")
+
+    let formNum = imageForm.length - 1
+
+    let addForm = function(e){
+        e.preventDefault()
+
+        let newForm = imageForm[0].cloneNode(true)
+        let formRegex = RegExp(`set-(\\d){1}-`,'g')
+
+        formNum++ //Increment the form number
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `set-${formNum}-`) //Update the new form to have the correct form number
+        container.insertBefore(newForm, addImage) //Insert the new form at the end of the list of forms
+
+        totalForms.setAttribute('value', `${formNum+1}`) //Increment the number of total forms in the form management
+    }
+
+    addImage.addEventListener('click', addForm)
+</script>

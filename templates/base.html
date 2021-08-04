@@ -1,0 +1,151 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>
+        {% block page_title %}{% endblock %}
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}">
+
+
+  {# Vendor styles #}
+  {% block vendor_css %}
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'css/vendor.css' %}" />
+  {% endblock %}
+
+  {# Global styles #}
+  {% block site_css %}
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'css/style.css' %}" />
+  {% endblock %}
+
+  {# Page-specific styles #}
+  {% autoescape off %}
+    {% block page_css %}{% endblock %}
+  {% endautoescape %}
+
+  {% block extra_head %}
+    {# Extra header stuff (scripts, styles, metadata, etc) #}
+  {% endblock %}
+
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+    {% if user.is_authenticated %}
+         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+         <a class="navbar-brand fa fa-home" href="{% url 'accounts_admin:home' %}"></a>
+         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+         </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+         <ul class="navbar-nav mr-auto">
+             <li class="nav-item active">
+              <a href="{% url 'notes:note_list' %}" class="nav-link">Notes<span class="sr-only">(current)</span></a>
+             </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="CalsDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Calculators
+                </a>
+                <div class="dropdown-menu" aria-labelledby="CalsDropdownMenuLink">
+                    <a class="dropdown-item" href="{% url 'util_calculator:calculate' %}">Ma's Calculator</a>
+                    <a class="dropdown-item" href="{% url 'util_calculator:payment-date' %}">Date Calculator</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'util_calculator:generic-calculator' %}">General Calculator</a>
+                    <a class="dropdown-item" href="{% url 'util_calculator:js-calculator' %}">JS & Django Combined Calculator</a>
+                    <a class="dropdown-item" href="{% url 'util_calculator:pure-js' %}">Pure JS Calculator</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="BillsDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Bills & Payments
+                </a>
+                <div class="dropdown-menu" aria-labelledby="BillsDropdownMenuLink">
+                    <a class="dropdown-item" href="{% url 'util_calculator:bill-list' %}">Bills</a>
+                    <a class="dropdown-item" href="{% url 'util_calculator:payment-list' %}">Payments</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'receipts:receipts-list' %}" class="nav-link">Receipts</a>
+            </li>
+         </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="UserMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img class="rounded-circle account-img" src="{{ user.profile.image.url }}"
+                             style="width: 50px; height: 50px" alt="profile">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="UserMenuLink">
+                        <div class="dropdown-item" ><strong>{{ user.profile }}</strong></div>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'accounts_admin:update-profile' %}">Profile</a>
+                        <a class="dropdown-item" href="{% url 'password_reset' %}">Reset Password</a>
+                        <a class="dropdown-item" href="{% url 'accounts_admin:logout' %}">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        </nav>
+    {% else %}
+        <nav class="navbar justify-content-center navbar-expand-lg navbar-dark bg-dark">
+            <img class="rounded-circle account-img" src="{% static 'favicon.png' %}" alt="img" style="height: 100px">
+        </nav>
+    {% endif %}
+
+        <div class="container-fluit">
+            <div class="row">
+            <!--
+                <div class="col-sm-2">
+                    {% block sidebar %}
+                    {% endblock %}
+                </div>
+            -->
+                <div class="col-sm-10 mx-auto">
+                    <h1>
+                        {% block title %}{% endblock %}
+                    </h1>
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+
+
+        {# Modal HTML #}
+        {% block modals %}
+        {% endblock %}
+
+        {# Vendor javascript #}
+        {% block vendor_js %}
+          <script src="{% static 'js/vendor.js' %}"></script>
+        {% endblock %}
+
+        {# Global javascript #}
+        {% block site_js %}
+          <script src="{% static 'js/application.js' %}"></script>
+        {% endblock %}
+
+        {# Shared data for javascript #}
+        <script type="text/javascript">
+          window._sharedData = {
+            {% autoescape off %}
+              {% block shared_data %}
+                'DEBUG': {% if debug %}true{% else %}false{% endif %},
+              {% endblock %}
+            {% endautoescape %}
+          }
+        </script>
+
+        {# Page javascript #}
+        {% autoescape off %}
+          {% block page_js %}
+          {% endblock %}
+        {% endautoescape %}
+
+</body>
+</html>

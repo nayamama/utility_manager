@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+ {% block extra_head %}
+    {{ form.media }}
+{% endblock %}
+
+{% block title %}
+    Generic Cost Calculator
+{% endblock %}
+
+{% block content %}
+    <div class="col-sm-8 input-group date">
+        <form action="{% url 'util_calculator:generic-calculator' %}" method="post">
+        {% csrf_token %}
+             {% bootstrap_form form %}
+             <input type="submit" name="submit" value="Submit">
+        </form>
+    </div>
+    {% if average_cost %}
+        <p class="col-sm-8" style="border:3px; border-style:solid; border-color:#FF0000; padding: 1em; margin: 1em;">
+            The average_cost between {{ start_date }} and {{ end_date }} is {{ average_cost }} per {{ frequency }}.
+        </p>
+    {% endif %}
+
+
+{% endblock %}

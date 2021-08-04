@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+    Log out
+{% endblock %}
+
+{% block title %}
+    You are now logged out.
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex align-items-center flex-column justify-content-center h-100">
+        <img src="https://www.squadhelp.com/story_images/visual_images/1614749764-byebye.png" alt="img" height="200"/>
+        <p>
+            <a href="{% url 'accounts_admin:login' %}">Login again</a>
+        </p>
+    </div>
+{% endblock %}

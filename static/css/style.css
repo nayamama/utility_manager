@@ -1,0 +1,29 @@
+body, html {
+    height: 100%;
+}
+
+.sidebar-nav {
+    margin-top: 20px;
+    padding: 20px;
+    text-align: center;
+    list-style: none;
+    background-color: bisque;
+}
+
+h1 {
+    color: #7c795d;
+    font-family: 'Trocchi', serif;
+    font-size: 45px;
+    font-weight: normal;
+    line-height: 48px;
+    text-align: center;
+    margin: 10px;
+}
+
+.nav-item {
+    margin-left: 30px;
+    font-size: larger;
+    font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+}
+
+

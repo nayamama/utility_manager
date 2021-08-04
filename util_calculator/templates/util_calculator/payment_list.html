@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+{% load auth_extras %}
+
+{% block page_title %}
+    Payment list
+{% endblock %}
+
+{% block extra_head %}
+    <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 80%;
+    }
+
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+</style>
+{% endblock %}
+
+{% block title %}
+    Payment History
+{% endblock %}
+
+{% block content %}
+    {% include 'modal_hidden.html' %}
+
+    {% if request.user|has_group:'manager' %}
+    <p class="buttons">
+        <button type="button" class="btn btn-primary js-create-payment" data-toggle="modal" data-target="#pgModal" data-url="{% url 'util_calculator:payment-creation' %}">
+            <span class="fa fa-plus"></span>
+            New Payment
+        </button>
+    </p>
+    {% endif %}
+
+    <table border="2">
+       <tr>
+           <th>Date</th>
+           <th>Amount</th>
+           <th>Utility</th>
+       </tr>
+        {% for payment in object_list %}
+            <tr>
+                <td>{{ payment.payment_date }}</td>
+                <td>{{ payment.amount }}</td>
+                <td>{{ payment.utility.name }}</td>
+            </tr>
+        {% empty %}
+            No payments yet.
+        {% endfor %}
+    </table>
+
+    {% include 'pagination.html' %}
+{% endblock %}
+
+
+{% block page_js %}
+    <script src={% static 'util_calculator/js/util_calculator.js' %}></script>
+{% endblock %}

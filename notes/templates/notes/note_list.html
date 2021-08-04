@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+    <!-- Modal -->
+    <div class="modal fade" id="createNoteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+      </div>
+    </div>
+
+    <h1 class="page-header">Notes</h1>
+
+    <p>
+        <button type="button" class="btn btn-primary js-create-note" data-toggle="modal" data-target="#createNoteModal" data-url="{% url 'notes:new_note' %}">
+            <span class="fa fa-plus"></span>
+            New Note
+        </button>
+    </p>
+
+    <table class="table" id="note-table">
+        <thead>
+        <tr>
+          <th scope="col">Title</th>
+          <th scope="col">Date</th>
+        </tr>
+        </thead>
+        <tbody id="table-body-box">
+            {% for note in notes %}
+                <tr>
+                    <td>{{ note.title }}</td>
+                    <td>{{ note.date }}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-primary js-update-note" data-url="{% url 'notes:update_note' note.slug %}">
+                            <span class="fa fa-pencil fa-lg"></span>Edit
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger js-delete-note" data-url="{% url 'notes:note_delete' note.slug %}">
+                            <span class="fa fa-trash fa-lg"></span>Delete
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% include 'pagination.html' %}
+{% endblock %}
+
+{% block page_js %}
+    <script src={% static 'notes/js/notes.js' %}></script>
+{% endblock %}

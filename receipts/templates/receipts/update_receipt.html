@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+    Update Receipt
+{% endblock %}
+
+{% block title %}
+    Update Receipt
+{% endblock %}
+
+{% block content %}
+    <form method="post" action="{% url 'receipts:receipt-update' receipt.pk %}" enctype="multipart/form-data">
+        {% csrf_token %}
+    <div id="form-container">
+        {{ form.as_p }}
+
+        {{ formset.management_form }}
+        {% if formset.errors %}
+        {% for field in formset %}
+            {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+         {% endfor %}
+         {% for error in formset.non_form_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+          {% endfor %}
+        {% endif %}
+        {% for f in formset %}
+            <div class="image-form">
+            {{ f.as_p }}
+            </div>
+        {% endfor %}
+        <br>
+        <button id="add-image" type="button">Add Another Image</button>
+    </div>
+
+        <br>
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+{% endblock %}
+
+{% block page_js %}
+    <script>
+    let imageForm = document.querySelectorAll(".image-form")
+    let container = document.querySelector("#form-container")
+    let addImage = document.querySelector("#add-image")
+    //let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+    let totalForms = document.querySelector("#id_images_set-TOTAL_FORMS")
+
+    let formNum = imageForm.length - 1
+
+    let addForm = function(e){
+        e.preventDefault()
+
+        //let newForm = imageForm[0].cloneNode(true)
+        let newForm = imageForm[imageForm.length - 1].cloneNode(true)
+        let formRegex = RegExp(`set-(\\d){1}-`,'g')
+
+        formNum++ //Increment the form number
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `set-${formNum}-`) //Update the new form to have the correct form number
+        container.insertBefore(newForm, addImage) //Insert the new form at the end of the list of forms
+
+        totalForms.setAttribute('value', `${formNum+1}`) //Increment the number of total forms in the form management
+    }
+
+    addImage.addEventListener('click', addForm)
+</script>
+{% endblock %}

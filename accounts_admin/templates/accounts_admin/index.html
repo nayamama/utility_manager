@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+    Home
+{% endblock %}
+
+{% block title %}
+    Hi, {{ user.username }}!
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex align-items-center flex-column justify-content-center h-100">
+        You last log in is at {{ user.last_login }}
+    </div>
+{% endblock %}

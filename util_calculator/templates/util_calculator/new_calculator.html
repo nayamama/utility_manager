@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_title %}
+    Ma's Calculator
+{% endblock %}
+
+{% block title %}
+    MaMa's Utility Calculator
+{% endblock %}
+
+{% block content %}
+    <form method="post" action="{% url 'util_calculator:ma-utility-result' %}" id="calculator-form">
+    {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group{% if field.errors %} invalid{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}
+              <p class="help-block">{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <p style="background-color:powderblue; display: inline-block; margin-top: 25px;">
+    <div id="error-msg"></div>
+    <div id="result"></div>
+    </p>
+{% endblock %}
+
+
+
+{% block page_js %}
+    <script>
+        $(function (){
+
+            let clear = function () {
+                $('#id_start_date').empty();
+                $('#id_end_date').empty();
+            }
+
+            $.ajax({
+            type: "GET",
+            url: '{% url "util_calculator:get-dates" %}',
+            success:function (data){
+                console.log(data);
+                // clear selection and parse the data object
+                clear();
+                let jsonObj = JSON.parse(data)
+
+                $('#id_utility').change(function (){
+                    $('#result').empty();
+                    let utility = $(this).children('option:selected').text();
+                    console.log(utility)
+                    if(utility === 'Hydro'){
+                        clear();
+                        jsonObj.hydro_dates.forEach(function(item, index, array){
+                            let date = new Date(item);
+                            date = date.toISOString().slice(0, 10);
+                            console.log(date)
+                            $('#id_start_date').prepend("<option value='"+date+"'>"+item+"</option>");
+                            $('#id_end_date').prepend("<option value='"+date+"'>"+item+"</option>");
+                        });
+                    }else if (utility === 'Water'){
+                        clear();
+                       jsonObj.water_dates.forEach((function (item, index, array){
+                           let date = new Date(item)
+                            date = date.toISOString().slice(0, 10);
+                            console.log(date)
+                            $('#id_start_date').prepend("<option value='"+date+"'>"+item+"</option>");
+                            $('#id_end_date').prepend("<option value='"+date+"'>"+item+"</option>");
+                       }))
+                    }else {
+                        clear();
+                    }
+
+                });
+
+            },
+            error: function (error){
+                console.log(error);
+            }
+
+        });
+
+        $('#calculator-form').on('submit', function() {
+            let form = $(this);
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: form.serialize(),
+                success:function (data){
+                    console.log(data);
+                    if(data.msg){
+                        $('#result').html(data.msg);
+                    }else{
+                         alert(data);
+                    }
+                    clear();
+                    form.trigger('reset');
+                },
+                error: function (e){
+                    console.log(e);
+                },
+            });
+            return false;
+        });
+
+        })
+
+    </script>
+{% endblock %}

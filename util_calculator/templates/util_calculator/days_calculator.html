@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_title %}
+    Days calculator
+{% endblock %}
+
+{% block title %}
+    Days Calculator
+{% endblock %}
+
+{% block content %}
+    {% include 'modal_hidden.html' %}
+
+    <form  method="post" id="payment-date-form">
+    {% csrf_token %}
+        {{ form.as_p }}
+
+        <button class="btn btn-primary js-payment-date">Submit</button>
+    </form>
+{% endblock %}
+
+{% block page_js %}
+    <script>
+    $(function (){
+        $('.js-payment-date').on('click', function (e){
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            url: "{% url 'util_calculator:payment-date' %}",
+            data: $('#payment-date-form').serialize(),
+
+            success: function (response){
+                $('#pgModal').modal('show');
+                $('#pgModal .modal-content').html(response.html_form);
+            },
+            error: function () {
+                alert('problem');
+            }
+        })
+        //return false;
+    });
+
+    })
+</script>
+{% endblock %}

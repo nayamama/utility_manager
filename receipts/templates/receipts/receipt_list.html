@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load auth_extras %}
+
+{% block page_title %}
+    receipt list
+{% endblock %}
+
+{% block extra_head %}
+    <style>
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 80%;
+        }
+
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+
+        img {
+            height: 70px;
+            float: left;
+            padding: 5px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block title %}
+    Receipt List
+{% endblock %}
+
+{% block content %}
+    {% include 'modal_hidden.html' %}
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if request.user|has_group:'manager' %}
+    <div class="buttons">
+        <button type="button" class="btn btn-primary action_btn js-btn" data-toggle="modal" data-target="#pgModal" data-url="{% url 'receipts:receipt-creation' %}">
+            <span class="fa fa-plus"></span>
+            New Receipt
+        </button>
+        <button type="button" class="btn btn-primary action_btn js-btn" data-toggle="modal" data-target="#pgModal" data-url="{% url 'receipts:store-creation' %}">
+            <span class="fa fa-plus"></span>
+            New Store
+        </button>
+    </div>
+    {% endif %}
+    <br>
+    <table border="2" id="receipt-list">
+       <tr>
+           <th>Date</th>
+           <th>Amount</th>
+           <th>Store</th>
+           <th>Receipt</th>
+           {% if request.user|has_group:'manager' %}
+               <th>Management</th>
+           {% endif %}
+       </tr>
+        {% for receipt in object_list %}
+            <tr>
+                <td>{{ receipt.date }}</td>
+                <td>{{ receipt.amount }}</td>
+                <td>{{ receipt.store.name }}</td>
+                <td>
+                    {% for image in receipt.images_set.all %}
+                        <div class="pgImg" data-toggle="modal" data-target="#pgModal" data-url="{% url 'receipts:image' image.pk %}">
+                            <img src="{{ image.image.url }}" alt='img'/>
+                        </div>
+
+                    {% endfor %}
+                </td>
+                {% if request.user|has_group:'manager' %}
+                <td>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="location.href='{% url "receipts:receipt-update" receipt.pk %}'">
+                        <span class="fa fa-edit fa-lg"></span>Edit
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger js-delete-receipt" data-url="{% url 'receipts:receipt-delete' receipt.pk %}">
+                        <span class="fa fa-trash fa-lg"></span>Delete
+                    </button>
+                </td>
+                {% endif %}
+            </tr>
+        {% empty %}
+            No receipts yet.
+        {% endfor %}
+    </table>
+
+    {% include 'pagination.html' %}
+
+{% endblock %}
+
+{% block page_js %}
+    <script src="{% static 'receipts/js/receipts.js' %}"></script>
+{% endblock %}

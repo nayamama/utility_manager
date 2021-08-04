@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block extra_head %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js"></script>
+{% endblock %}
+
+{% block title %}
+    JS Cost Calculator
+{% endblock %}
+
+{%  block content %}
+    {% include 'modal_hidden.html' %}
+
+    <div class="col-sm-8">
+        <form method="post" data-url="{% url 'util_calculator:js-calculator' %}">
+
+            <table border="2">
+                {% csrf_token %}
+                <tr>
+                    <td>
+                        Start Date:
+                    </td>
+                    <td>
+                        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                          {{ form.start_date }}
+                          <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                          </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        End Date:
+                    </td>
+                    <td>
+                        <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+                          {{ form.end_date }}
+                          <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                          </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Amount:</td>
+                    <td id="amount">{{ form.amount }}</td>
+                </tr>
+                <tr>
+                    <td>Frequency</td>
+                    <td id="frequency">{{ form.frequency }}</td>
+                </tr>
+            </table>
+            <input type="submit" name="submit" value="Submit" class="calculate">
+
+
+            <p id="result">
+
+            </p>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block page_js %}
+<script>
+    $(function () {
+        // load datepicker1
+        $("#datetimepicker1").datetimepicker({
+          format: 'DD/MM/YYYY',
+        });
+
+        // load datepicker2
+        $("#datetimepicker2").datetimepicker({
+          format: 'DD/MM/YYYY',
+        });
+
+        $("form").on('submit', function(e){
+            e.preventDefault();
+            let form = $(this);
+
+            $.ajax({
+                type: 'POST',
+                headers:{"X-CSRFToken": '{{ csrf_token }}'},
+                url: form.attr("data-url"),
+                data: form.serialize(),
+                success: function(data){
+                    /*
+                    let start = data.start_date;
+                    form[0].reset();
+                    const resultBody = document.getElementById('result');
+
+                    resultBody.innerHTML = "<div>The average cost between " + start + " and " + data.end_date + " is " + data.average_cost + " per " +  data.frequency + " .</div>"
+
+                     */
+                    form[0].reset();
+                    console.log(data)
+                    $('#pgModal').modal('show');
+                    $('#pgModal .modal-content').html(data.html_form);
+
+                }
+            });
+            return false;
+        });
+  });
+
+
+</script>
+{% endblock %}

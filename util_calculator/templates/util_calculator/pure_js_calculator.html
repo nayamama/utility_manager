@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block extra_head %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js"></script>
+{% endblock %}
+
+{% block title %}
+    Pure JS Cost Calculator
+{% endblock %}
+
+{%  block content %}
+    <div class="col-sm-8">
+        <form method="post" data-url="{% url 'util_calculator:pure-js' %}">
+
+            <table border="2">
+                {% csrf_token %}
+                <tr>
+                    <td>
+                        Start Date:
+                    </td>
+                    <td>
+                        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                            {{ form.start_date }}
+                          <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                          </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        End Date:
+                    </td>
+                    <td>
+                        <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+                            {{ form.end_date }}
+                          <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                          </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Amount:</td>
+                    <td>{{ form.amount }}</td>
+                </tr>
+                <tr>
+                    <td>Frequency</td>
+                    <td id="frequency">{{ form.frequency }}</td>
+                </tr>
+            </table>
+            <input type="submit" name="submit" value="Submit" class="calculate">
+
+
+            <p id="result"></p>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block page_js %}
+<script>
+    $(function () {
+        // load datepicker1
+        $("#datetimepicker1").datetimepicker({
+          format: 'MM/DD/YYYY',
+        });
+
+        // load datepicker2
+        $("#datetimepicker2").datetimepicker({
+          format: 'MM/DD/YYYY',
+        });
+
+        $("form").on('submit', function(e){
+            e.preventDefault();
+            let form = $(this);
+
+            let start = $('#id_start_date').val();
+            let end = $('#id_end_date').val();
+            let amount = $('#id_amount').val();
+
+            $.ajax({
+                type: 'POST',
+                headers:{"X-CSRFToken": '{{ csrf_token }}'},
+                url: form.attr("data-url"),
+                success: function(){
+                    let average_cost;
+                    const msgBody = document.getElementById('result');
+
+                    let a = new Date(start);
+                    let b = new Date(end);
+                    let tdelta = (b.getTime() - a.getTime()) / (1000 * 3600 * 24)
+
+                    if(document.getElementById('id_frequency_0').checked){
+                        average_cost = Math.round(amount / tdelta * 100) / 100;
+                        console.log(average_cost);
+                        msgBody.innerHTML = "<div>The average cost between " + start + " and " + end + " is " + average_cost + " per " +  $('#id_frequency_0').val() + " .</div>"
+                    }else if(document.getElementById('id_frequency_1').checked){
+                        average_cost = Math.round(amount / tdelta * 7 * 100) / 100;
+                        console.log(average_cost);
+                        msgBody.innerHTML = "<div>The average cost between " + start + " and " + end + " is " + average_cost + " per " +  $('#id_frequency_1').val() + " .</div>"
+                    }else{
+                        average_cost = Math.round(amount / tdelta * 30 * 100) / 100;
+                        console.log(average_cost);
+                        msgBody.innerHTML = "<div>The average cost between " + start + " and " + end + " is " + average_cost + " per " +  $('#id_frequency_2').val() + " .</div>"
+                    }
+
+                    form[0].reset();
+                }
+            });
+            return false;
+        });
+  });
+
+
+</script>
+{% endblock %}
